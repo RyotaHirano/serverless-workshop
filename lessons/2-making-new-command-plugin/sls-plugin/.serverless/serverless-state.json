@@ -1,0 +1,388 @@
+{
+  "service": {
+    "service": "sls-plugins-2",
+    "serviceObject": {
+      "name": "sls-plugins-2"
+    },
+    "provider": {
+      "stage": "dev",
+      "region": "us-east-1",
+      "variableSyntax": "\\${([ ~:a-zA-Z0-9._'\",\\-\\/\\(\\)]+?)}",
+      "name": "aws",
+      "runtime": "nodejs8.10",
+      "environment": {
+        "users_table": "users-dev"
+      },
+      "versionFunctions": true,
+      "remoteFunctionData": null,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket"
+          },
+          "GetLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/sls-plugins-2-dev-get"
+            }
+          },
+          "PostLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/sls-plugins-2-dev-post"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "dev",
+                        "sls-plugins-2",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/sls-plugins-2-dev-get:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/sls-plugins-2-dev-post:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/sls-plugins-2-dev-get:*:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/sls-plugins-2-dev-post:*:*"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "sls-plugins-2",
+                    "dev",
+                    "us-east-1",
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "GetLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/sls-plugins-2/dev/1538116697057-2018-09-28T06:38:17.057Z/sls-plugins-2.zip"
+              },
+              "FunctionName": "sls-plugins-2-dev-get",
+              "Handler": "handler.getUsers",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "users_table": "users-dev"
+                }
+              }
+            },
+            "DependsOn": [
+              "GetLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "GetLambdaVersionZD7bRGIaFFUZkiFLRiwSqdrFshpq7TjtoLKuc7ADeaY": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "GetLambdaFunction"
+              },
+              "CodeSha256": "IHcGFk9zLt+rTDdLJnJSj6h4DuUWgBTbyTv1imxo0VI="
+            }
+          },
+          "PostLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/sls-plugins-2/dev/1538116697057-2018-09-28T06:38:17.057Z/sls-plugins-2.zip"
+              },
+              "FunctionName": "sls-plugins-2-dev-post",
+              "Handler": "handler.createUser",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs8.10",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "users_table": "users-dev"
+                }
+              }
+            },
+            "DependsOn": [
+              "PostLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "PostLambdaVersionGQZH5A3OFtbtoDqL7AKoy8UsWcg5MY4wMjAZNGHwxbk": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "PostLambdaFunction"
+              },
+              "CodeSha256": "IHcGFk9zLt+rTDdLJnJSj6h4DuUWgBTbyTv1imxo0VI="
+            }
+          },
+          "UsersDynamoDB": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "Name",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "EmailAddress",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "Name",
+                  "KeyType": "HASH"
+                },
+                {
+                  "AttributeName": "EmailAddress",
+                  "KeyType": "RANGE"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": "5",
+                "WriteCapacityUnits": "5"
+              },
+              "TableName": "users-dev"
+            }
+          },
+          "DynamoDBIamPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "DependsOn": "UsersDynamoDB",
+            "Properties": {
+              "PolicyName": "lambda-dynamodb",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "dynamodb:Scan",
+                      "dynamodb:UpdateItem"
+                    ],
+                    "Resource": "arn:aws:dynamodb:*:*:table/users-dev"
+                  }
+                ]
+              },
+              "Roles": [
+                {
+                  "Ref": "IamRoleLambdaExecution"
+                }
+              ]
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          },
+          "GetLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "GetLambdaVersionZD7bRGIaFFUZkiFLRiwSqdrFshpq7TjtoLKuc7ADeaY"
+            }
+          },
+          "PostLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "PostLambdaVersionGQZH5A3OFtbtoDqL7AKoy8UsWcg5MY4wMjAZNGHwxbk"
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket"
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "custom": {
+      "stage": "dev"
+    },
+    "plugins": [
+      "serverless-download"
+    ],
+    "pluginsData": {},
+    "functions": {
+      "get": {
+        "handler": "handler.getUsers",
+        "events": [],
+        "name": "sls-plugins-2-dev-get",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      },
+      "post": {
+        "handler": "handler.createUser",
+        "events": [],
+        "name": "sls-plugins-2-dev-post",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs8.10",
+        "vpc": {}
+      }
+    },
+    "resources": {
+      "Resources": {
+        "UsersDynamoDB": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "Name",
+                "AttributeType": "S"
+              },
+              {
+                "AttributeName": "EmailAddress",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "Name",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "EmailAddress",
+                "KeyType": "RANGE"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": "5",
+              "WriteCapacityUnits": "5"
+            },
+            "TableName": "users-dev"
+          }
+        },
+        "DynamoDBIamPolicy": {
+          "Type": "AWS::IAM::Policy",
+          "DependsOn": "UsersDynamoDB",
+          "Properties": {
+            "PolicyName": "lambda-dynamodb",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "dynamodb:Scan",
+                    "dynamodb:UpdateItem"
+                  ],
+                  "Resource": "arn:aws:dynamodb:*:*:table/users-dev"
+                }
+              ]
+            },
+            "Roles": [
+              {
+                "Ref": "IamRoleLambdaExecution"
+              }
+            ]
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "artifact": "/Users/takuchan/somewhere/serverless-plugin-workshop/lessons/2-making-new-command-plugin/sls-plugin/.serverless/sls-plugins-2.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/sls-plugins-2/dev/1538116697057-2018-09-28T06:38:17.057Z",
+    "artifact": "sls-plugins-2.zip"
+  }
+}
